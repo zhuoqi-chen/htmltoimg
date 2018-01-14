@@ -1,14 +1,13 @@
 'use strict';
 const Controller = require('egg').Controller;
-const puppeteer = require('puppeteer');
 class HomeController extends Controller {
   async index() {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto('https://www.baidu.com');
-    await page.screenshot({ path: './screenshot/baidu.png' });
-    await browser.close();
-    this.ctx.body = 'htmltoimg down';
+    if (!this.ctx.helper.isURL(this.ctx.params.url)) {
+      this.ctx.body = 'Incorrect url param';
+      return;
+    }
+    this.ctx.set('content-type', 'image/png');
+    this.ctx.body = await this.service.htmltoimg.screenshot(this.ctx.params.url);
   }
 }
 
